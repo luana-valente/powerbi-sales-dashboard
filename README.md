@@ -105,3 +105,5 @@ This approach allows flexible analysis without the need to create multiple versi
 - Microsoft Fabric
 - DAX
 - Power BI
+
+> 🎓 Final grade: 19 / 20
