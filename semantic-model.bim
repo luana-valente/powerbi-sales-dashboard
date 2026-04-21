@@ -12,7 +12,7 @@
           "protocol": "tds",
           "address": {
             "server": "cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe.datawarehouse.fabric.microsoft.com",
-            "database": "LH_DAE_15_grp_12"
+            "database": "sample_database"
           },
           "authentication": null,
           "query": null
