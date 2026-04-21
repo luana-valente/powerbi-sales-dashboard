@@ -1,0 +1,1458 @@
+{
+  "name": "SemanticModel",
+  "compatibilityLevel": 1700,
+  "model": {
+    "culture": "pt-PT",
+    "discourageImplicitMeasures": true,
+    "dataSources": [
+      {
+        "type": "structured",
+        "name": "SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m",
+        "connectionDetails": {
+          "protocol": "tds",
+          "address": {
+            "server": "cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe.datawarehouse.fabric.microsoft.com",
+            "database": "LH_DAE_15_grp_12"
+          },
+          "authentication": null,
+          "query": null
+        },
+        "credential": {
+          "AuthenticationKind": "OAuth2",
+          "kind": "SQL",
+          "path": "cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe.datawarehouse.fabric.microsoft.com;LH_DAE_15_grp_12",
+          "Expires": "Sat, 29 Nov 2025 13:36:21 GMT"
+        }
+      }
+    ],
+    "tables": [
+      {
+        "name": "Date",
+        "dataCategory": "Time",
+        "columns": [
+          {
+            "name": "CalendarMonth",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "MonthNumberOfYear"
+          },
+          {
+            "name": "CalendarQuarter",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "CalendarQuarter"
+          },
+          {
+            "name": "CalendarYear",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "CalendarYear"
+          },
+          {
+            "name": "DateKey",
+            "dataType": "dateTime",
+            "isHidden": true,
+            "isKey": true,
+            "sourceColumn": "DateKey",
+            "formatString": "Short Date",
+            "annotations": [
+              {
+                "name": "Format",
+                "value": "<Format Format=\"DateTimeShortDatePattern\" />"
+              }
+            ]
+          },
+          {
+            "type": "calculated",
+            "name": "MonthNameShort",
+            "dataType": "string",
+            "isDataTypeInferred": true,
+            "expression": "FORMAT ( [DateKey], \"mmm\" )"
+          },
+          {
+            "type": "calculated",
+            "name": "DayOfWeekShort",
+            "dataType": "string",
+            "isDataTypeInferred": true,
+            "expression": "FORMAT ('Date'[DateKey], \"ddd\" )"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_Date = Source{[Schema=\"dbo\",Item=\"Date\"]}[Data]",
+                "in",
+                "    dbo_Date"
+              ]
+            }
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "Calendar",
+            "levels": [
+              {
+                "name": "Year",
+                "ordinal": 0,
+                "column": "CalendarYear"
+              },
+              {
+                "name": "Quarter",
+                "ordinal": 1,
+                "column": "CalendarQuarter"
+              },
+              {
+                "name": "Month",
+                "ordinal": 2,
+                "column": "CalendarMonth"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Geography",
+        "isHidden": true,
+        "columns": [
+          {
+            "name": "GeographyKey",
+            "dataType": "int64",
+            "sourceColumn": "GeographyKey"
+          },
+          {
+            "name": "City",
+            "dataType": "string",
+            "sourceColumn": "City"
+          },
+          {
+            "name": "State",
+            "dataType": "string",
+            "sourceColumn": "StateProvinceName"
+          },
+          {
+            "name": "Country",
+            "dataType": "string",
+            "sourceColumn": "EnglishCountryRegionName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_Geography = Source{[Schema=\"dbo\",Item=\"Geography\"]}[Data]",
+                "in",
+                "    dbo_Geography"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Product",
+        "columns": [
+          {
+            "name": "ProductKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ProductKey"
+          },
+          {
+            "name": "Product",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "EnglishProductName"
+          },
+          {
+            "name": "ProductSubcategoryKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ProductSubcategoryKey"
+          },
+          {
+            "name": "Color",
+            "dataType": "string",
+            "sourceColumn": "Color"
+          },
+          {
+            "type": "calculated",
+            "name": "Subcategory",
+            "dataType": "string",
+            "isDataTypeInferred": true,
+            "isHidden": true,
+            "expression": "RELATED(ProductSubCategory[EnglishProductSubcategoryName])"
+          },
+          {
+            "type": "calculated",
+            "name": "Category",
+            "dataType": "string",
+            "isDataTypeInferred": true,
+            "isHidden": true,
+            "expression": "RELATED(ProductCategory[EnglishProductCategoryName])"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_Product = Source{[Schema=\"dbo\",Item=\"Product\"]}[Data]",
+                "in",
+                "    dbo_Product"
+              ]
+            }
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "Products",
+            "levels": [
+              {
+                "name": "Category",
+                "ordinal": 0,
+                "column": "Category"
+              },
+              {
+                "name": "Subcategory",
+                "ordinal": 1,
+                "column": "Subcategory"
+              },
+              {
+                "name": "Product",
+                "ordinal": 2,
+                "column": "Product"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "ProductCategory",
+        "isHidden": true,
+        "columns": [
+          {
+            "name": "ProductCategoryKey",
+            "dataType": "int64",
+            "sourceColumn": "ProductCategoryKey"
+          },
+          {
+            "name": "EnglishProductCategoryName",
+            "dataType": "string",
+            "sourceColumn": "EnglishProductCategoryName"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_ProductCategory = Source{[Schema=\"dbo\",Item=\"ProductCategory\"]}[Data]",
+                "in",
+                "    dbo_ProductCategory"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "ProductSubCategory",
+        "isHidden": true,
+        "columns": [
+          {
+            "name": "ProductSubcategoryKey",
+            "dataType": "int64",
+            "sourceColumn": "ProductSubcategoryKey"
+          },
+          {
+            "name": "EnglishProductSubcategoryName",
+            "dataType": "string",
+            "sourceColumn": "EnglishProductSubcategoryName"
+          },
+          {
+            "name": "ProductCategoryKey",
+            "dataType": "int64",
+            "sourceColumn": "ProductCategoryKey"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_ProductSubCategory = Source{[Schema=\"dbo\",Item=\"ProductSubCategory\"]}[Data]",
+                "in",
+                "    dbo_ProductSubCategory"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Reseller",
+        "columns": [
+          {
+            "name": "ResellerKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ResellerKey"
+          },
+          {
+            "name": "BusinessType",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "BusinessType"
+          },
+          {
+            "name": "Reseller",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "ResellerName"
+          },
+          {
+            "name": "GeographyKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "GeographyKey"
+          },
+          {
+            "type": "calculated",
+            "name": "Country",
+            "dataType": "string",
+            "isDataTypeInferred": true,
+            "isHidden": true,
+            "expression": "RELATED(Geography[Country])"
+          },
+          {
+            "type": "calculated",
+            "name": "State",
+            "dataType": "string",
+            "isDataTypeInferred": true,
+            "isHidden": true,
+            "expression": "RELATED(Geography[State])"
+          },
+          {
+            "type": "calculated",
+            "name": "City",
+            "dataType": "string",
+            "isDataTypeInferred": true,
+            "isHidden": true,
+            "expression": "RELATED(Geography[City])"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_Reseller = Source{[Schema=\"dbo\",Item=\"Reseller\"]}[Data]",
+                "in",
+                "    dbo_Reseller"
+              ]
+            }
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "Geography",
+            "levels": [
+              {
+                "name": "Country",
+                "ordinal": 0,
+                "column": "Country"
+              },
+              {
+                "name": "State",
+                "ordinal": 1,
+                "column": "State"
+              },
+              {
+                "name": "City",
+                "ordinal": 2,
+                "column": "City"
+              }
+            ]
+          },
+          {
+            "name": "Resellers",
+            "levels": [
+              {
+                "name": "BusinessType",
+                "ordinal": 0,
+                "column": "BusinessType"
+              },
+              {
+                "name": "Reseller",
+                "ordinal": 1,
+                "column": "Reseller"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "ResellerSales",
+        "columns": [
+          {
+            "name": "ProductKey",
+            "dataType": "int64",
+            "sourceColumn": "ProductKey"
+          },
+          {
+            "name": "OrderDateKey",
+            "dataType": "dateTime",
+            "sourceColumn": "OrderDateKey",
+            "formatString": "Short Date",
+            "annotations": [
+              {
+                "name": "Format",
+                "value": "<Format Format=\"DateTimeShortDatePattern\" />"
+              }
+            ]
+          },
+          {
+            "name": "ShipDateKey",
+            "dataType": "dateTime",
+            "sourceColumn": "ShipDateKey",
+            "formatString": "Short Date",
+            "annotations": [
+              {
+                "name": "Format",
+                "value": "<Format Format=\"DateTimeShortDatePattern\" />"
+              }
+            ]
+          },
+          {
+            "name": "ResellerKey",
+            "dataType": "int64",
+            "sourceColumn": "ResellerKey"
+          },
+          {
+            "name": "EmployeeKey",
+            "dataType": "int64",
+            "sourceColumn": "EmployeeKey"
+          },
+          {
+            "name": "SalesTerritoryKey",
+            "dataType": "int64",
+            "sourceColumn": "SalesTerritoryKey"
+          },
+          {
+            "name": "OrderQuantity",
+            "dataType": "int64",
+            "sourceColumn": "OrderQuantity"
+          },
+          {
+            "name": "TotalProductCost",
+            "dataType": "double",
+            "sourceColumn": "TotalProductCost"
+          },
+          {
+            "name": "SalesAmount",
+            "dataType": "double",
+            "sourceColumn": "SalesAmount",
+            "formatString": "0.00"
+          },
+          {
+            "type": "calculated",
+            "name": "Time to ship",
+            "dataType": "int64",
+            "isDataTypeInferred": true,
+            "isHidden": true,
+            "expression": " DATEDIFF(ResellerSales[OrderDateKey], ResellerSales[ShipDateKey], DAY)"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ResellerSales2010",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_ResellerSales = Source{[Schema=\"dbo\",Item=\"ResellerSales\"]}[Data],",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_ResellerSales,{{\"ShipDateKey\", type datetime}, {\"OrderDateKey\", type datetime}}),",
+                "    #\"Filtered Rows\" = Table.SelectRows(#\"Changed Type\", each [OrderDateKey] >= #datetime(2010, 1, 1, 0, 0, 0) and [OrderDateKey] <= #datetime(2010, 12, 31, 0, 0, 0))",
+                "in",
+                "    #\"Filtered Rows\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                  "    dbo_ResellerSales = Source{[Schema=\"dbo\",Item=\"ResellerSales\"]}[Data],",
+                  "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_ResellerSales,{{\"ShipDateKey\", type datetime}, {\"OrderDateKey\", type datetime}}),",
+                  "    #\"Filtered Rows\" = Table.SelectRows(#\"Changed Type\", each [OrderDateKey] >= #datetime(2010, 1, 1, 0, 0, 0) and [OrderDateKey] <= #datetime(2010, 12, 31, 0, 0, 0))",
+                  "in",
+                  "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "ResellerSales2011",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_ResellerSales = Source{[Schema=\"dbo\",Item=\"ResellerSales\"]}[Data],",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_ResellerSales,{{\"ShipDateKey\", type datetime}, {\"OrderDateKey\", type datetime}}),",
+                "    #\"Filtered Rows\" = Table.SelectRows(#\"Changed Type\", each [OrderDateKey] >= #datetime(2011, 1, 1, 0, 0, 0) and [OrderDateKey] <= #datetime(2011, 12, 31, 0, 0, 0))",
+                "in",
+                "    #\"Filtered Rows\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                  "    dbo_ResellerSales = Source{[Schema=\"dbo\",Item=\"ResellerSales\"]}[Data],",
+                  "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_ResellerSales,{{\"ShipDateKey\", type datetime}, {\"OrderDateKey\", type datetime}}),",
+                  "    #\"Filtered Rows\" = Table.SelectRows(#\"Changed Type\", each [OrderDateKey] >= #datetime(2011, 1, 1, 0, 0, 0) and [OrderDateKey] <= #datetime(2011, 12, 31, 0, 0, 0))",
+                  "in",
+                  "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "ResellerSales2012",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_ResellerSales = Source{[Schema=\"dbo\",Item=\"ResellerSales\"]}[Data],",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_ResellerSales,{{\"ShipDateKey\", type datetime}, {\"OrderDateKey\", type datetime}}),",
+                "    #\"Filtered Rows\" = Table.SelectRows(#\"Changed Type\", each [OrderDateKey] >= #datetime(2012, 1, 1, 0, 0, 0) and [OrderDateKey] <= #datetime(2012, 12, 31, 0, 0, 0))",
+                "in",
+                "    #\"Filtered Rows\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                  "    dbo_ResellerSales = Source{[Schema=\"dbo\",Item=\"ResellerSales\"]}[Data],",
+                  "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_ResellerSales,{{\"ShipDateKey\", type datetime}, {\"OrderDateKey\", type datetime}}),",
+                  "    #\"Filtered Rows\" = Table.SelectRows(#\"Changed Type\", each [OrderDateKey] >= #datetime(2012, 1, 1, 0, 0, 0) and [OrderDateKey] <= #datetime(2012, 12, 31, 0, 0, 0))",
+                  "in",
+                  "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "ResellerSales2013",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_ResellerSales = Source{[Schema=\"dbo\",Item=\"ResellerSales\"]}[Data],",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_ResellerSales,{{\"ShipDateKey\", type datetime}, {\"OrderDateKey\", type datetime}}),",
+                "    #\"Filtered Rows\" = Table.SelectRows(#\"Changed Type\", each [OrderDateKey] >= #datetime(2013, 1, 1, 0, 0, 0) and [OrderDateKey] <= #datetime(2013, 12, 31, 0, 0, 0))",
+                "in",
+                "    #\"Filtered Rows\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                  "    dbo_ResellerSales = Source{[Schema=\"dbo\",Item=\"ResellerSales\"]}[Data],",
+                  "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_ResellerSales,{{\"ShipDateKey\", type datetime}, {\"OrderDateKey\", type datetime}}),",
+                  "    #\"Filtered Rows\" = Table.SelectRows(#\"Changed Type\", each [OrderDateKey] >= #datetime(2013, 1, 1, 0, 0, 0) and [OrderDateKey] <= #datetime(2013, 12, 31, 0, 0, 0))",
+                  "in",
+                  "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "ResellerSales2019",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_ResellerSales = Source{[Schema=\"dbo\",Item=\"ResellerSales\"]}[Data],",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_ResellerSales,{{\"ShipDateKey\", type datetime}, {\"OrderDateKey\", type datetime}}),",
+                "    #\"Filtered Rows\" = Table.SelectRows(#\"Changed Type\", each [OrderDateKey] >= #datetime(2019, 1, 1, 0, 0, 0) and [OrderDateKey] <= #datetime(2019, 12, 31, 0, 0, 0))",
+                "in",
+                "    #\"Filtered Rows\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                  "    dbo_ResellerSales = Source{[Schema=\"dbo\",Item=\"ResellerSales\"]}[Data],",
+                  "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_ResellerSales,{{\"ShipDateKey\", type datetime}, {\"OrderDateKey\", type datetime}}),",
+                  "    #\"Filtered Rows\" = Table.SelectRows(#\"Changed Type\", each [OrderDateKey] >= #datetime(2019, 1, 1, 0, 0, 0) and [OrderDateKey] <= #datetime(2019, 12, 31, 0, 0, 0))",
+                  "in",
+                  "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          }
+        ],
+        "measures": [
+          {
+            "name": "DistinctProduct",
+            "expression": "DISTINCTCOUNT([ProductKey])",
+            "formatString": "0"
+          },
+          {
+            "name": "Cost",
+            "expression": "SUM([TotalProductCost])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Sales",
+            "expression": "SUM([SalesAmount])",
+            "formatString": "#,0",
+            "kpi": {
+              "targetExpression": "'SalesQuota'[Quota]",
+              "targetFormatString": "#,0",
+              "statusGraphic": "Traffic Light - Single",
+              "statusExpression": [
+                "var x='ResellerSales'[Sales]/'ResellerSales'[_Sales Goal] return",
+                "            if(ISBLANK(x),BLANK(),",
+                "                    If(x<0.9,-1,",
+                "\t                If(x<1,0,1)",
+                "                )",
+                "            )",
+                "            "
+              ],
+              "annotations": [
+                {
+                  "name": "GoalType",
+                  "value": "Measure"
+                },
+                {
+                  "name": "KpiStatusType",
+                  "value": "Linear"
+                },
+                {
+                  "name": "KpiThresholdType",
+                  "value": "Percentage"
+                },
+                {
+                  "name": "KpiThresholdOrdering",
+                  "value": "Ascending"
+                },
+                {
+                  "name": "KpiThresholdCount",
+                  "value": "2"
+                },
+                {
+                  "name": "KpiThreshold_0",
+                  "value": "90"
+                },
+                {
+                  "name": "KpiThreshold_1",
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          {
+            "name": "Profit",
+            "expression": "ResellerSales[Sales]-[Cost]",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Profit as %",
+            "expression": "DIVIDE([Profit],ResellerSales[Sales])",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "Sales YTD (Ordered)",
+            "expression": " TOTALYTD(ResellerSales[Sales],'Date'[DateKey])",
+            "formatString": "0"
+          },
+          {
+            "name": "Sales YTD (Shipped)",
+            "expression": [
+              " TOTALYTD(ResellerSales[Sales],'Date'[DateKey],USERELATIONSHIP(ResellerSales[ShipDateKey],'Date'[DateKey]))",
+              ""
+            ],
+            "formatString": "0"
+          },
+          {
+            "name": "Order",
+            "expression": "SUM(ResellerSales[OrderQuantity])"
+          },
+          {
+            "name": "Order to Shipping",
+            "expression": [
+              " ",
+              "AVERAGEX(",
+              "    ResellerSales,",
+              "    DATEDIFF(ResellerSales[OrderDateKey], ResellerSales[ShipDateKey], DAY)",
+              ")"
+            ],
+            "formatString": "0.0"
+          },
+          {
+            "name": "DistinctTime2Ship",
+            "expression": " DISTINCTCOUNT(ResellerSales[Time to ship])",
+            "isHidden": true
+          }
+        ]
+      },
+      {
+        "name": "SalesPerson",
+        "columns": [
+          {
+            "name": "EmployeeKey",
+            "dataType": "int64",
+            "sourceColumn": "EmployeeKey"
+          },
+          {
+            "name": "SalesTerritoryKey",
+            "dataType": "int64",
+            "sourceColumn": "SalesTerritoryKey"
+          },
+          {
+            "name": "FirstName",
+            "dataType": "string",
+            "sourceColumn": "FirstName"
+          },
+          {
+            "name": "LastName",
+            "dataType": "string",
+            "sourceColumn": "LastName"
+          },
+          {
+            "name": "LoginID",
+            "dataType": "string",
+            "sourceColumn": "LoginID"
+          },
+          {
+            "type": "calculated",
+            "name": "SalesPerson",
+            "dataType": "string",
+            "isDataTypeInferred": true,
+            "expression": "SalesPerson[FirstName] &\" \" & SalesPerson[LastName]"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_SalesPerson = Source{[Schema=\"dbo\",Item=\"SalesPerson\"]}[Data]",
+                "in",
+                "    dbo_SalesPerson"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "SalesQuota",
+        "columns": [
+          {
+            "name": "EmployeeKey",
+            "dataType": "int64",
+            "sourceColumn": "EmployeeKey"
+          },
+          {
+            "name": "DateKey",
+            "dataType": "dateTime",
+            "sourceColumn": "DateKey",
+            "formatString": "Short Date",
+            "annotations": [
+              {
+                "name": "Format",
+                "value": "<Format Format=\"DateTimeShortDatePattern\" />"
+              }
+            ]
+          },
+          {
+            "name": "SalesAmountQuota",
+            "dataType": "double",
+            "sourceColumn": "SalesAmountQuota"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_SalesQuota = Source{[Schema=\"dbo\",Item=\"SalesQuota\"]}[Data],",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(dbo_SalesQuota,{{\"DateKey\", type datetime}})",
+                "in",
+                "    #\"Changed Type\""
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Quota",
+            "expression": [
+              " ",
+              "VAR TotalTrimestre = ",
+              "    CALCULATE(",
+              "        SUM(SalesQuota[SalesAmountQuota]), ",
+              "        ALLEXCEPT('Date', 'Date'[CalendarYear], 'Date'[CalendarQuarter]),",
+              "        USERELATIONSHIP('Date'[DateKey], SalesQuota[DateKey])",
+              "    )",
+              "",
+              "VAR SomaSimples = ",
+              "    CALCULATE(",
+              "        SUM(SalesQuota[SalesAmountQuota]),",
+              "        USERELATIONSHIP('Date'[DateKey], SalesQuota[DateKey])",
+              "    )",
+              "",
+              "RETURN",
+              "    IF(",
+              "        HASONEVALUE('Date'[CalendarMonth]),",
+              "        TotalTrimestre / 3,",
+              "        SomaSimples",
+              "    )"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "Variance",
+            "expression": " [Sales] - [Quota]",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Variance %",
+            "expression": " [Variance] / [Quota]",
+            "formatString": "0.00%;-0.00%;0.00%"
+          }
+        ]
+      },
+      {
+        "name": "SalesTerritory",
+        "columns": [
+          {
+            "name": "SalesTerritoryKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "SalesTerritoryKey"
+          },
+          {
+            "name": "Region",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "SalesTerritoryRegion"
+          },
+          {
+            "name": "Country",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "SalesTerritoryCountry"
+          },
+          {
+            "name": "Group",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "SalesTerritoryGroup"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/cuzzdpnx5equzo7szet7ohk5ei-ktrujkmhrqmu3j3lebpnroyyhe datawarehouse fabric m\",",
+                "    dbo_SalesTerritory = Source{[Schema=\"dbo\",Item=\"SalesTerritory\"]}[Data]",
+                "in",
+                "    dbo_SalesTerritory"
+              ]
+            }
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "Regions",
+            "levels": [
+              {
+                "name": "Group",
+                "ordinal": 0,
+                "column": "Group"
+              },
+              {
+                "name": "Country",
+                "ordinal": 1,
+                "column": "Country"
+              },
+              {
+                "name": "Region",
+                "ordinal": 2,
+                "column": "Region"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Time Intelligence",
+        "calculationGroup": {
+          "calculationItems": [
+            {
+              "name": "MTD",
+              "description": "Month-to-Date",
+              "expression": [
+                "CALCULATE(SELECTEDMEASURE(), DATESMTD('Date'[DateKey]))",
+                ""
+              ]
+            },
+            {
+              "name": "QTD",
+              "description": "Quarter-to-Date",
+              "expression": [
+                "CALCULATE(SELECTEDMEASURE(), DATESQTD('Date'[DateKey]",
+                "))",
+                ""
+              ]
+            },
+            {
+              "name": "YTD",
+              "description": "Year-to-Date",
+              "expression": "CALCULATE(SELECTEDMEASURE(), DATESYTD('Date'[DateKey]))"
+            },
+            {
+              "name": "PY",
+              "description": "Previous Year",
+              "expression": "CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR('Date'[DateKey]))"
+            },
+            {
+              "name": "PY MTD",
+              "description": "Previous Year Month-to-Date",
+              "expression": [
+                "CALCULATE( SELECTEDMEASURE(),DATESMTD(SAMEPERIODLASTYEAR('Date'[DateKey])))",
+                "",
+                "",
+                ""
+              ]
+            },
+            {
+              "name": "YoY%",
+              "description": "Year-over-Year Percentage",
+              "expression": [
+                "DIVIDE(CALCULATE( SELECTEDMEASURE() - CALCULATE ( SELECTEDMEASURE(), SAMEPERIODLASTYEAR('Date'[DateKey]) ) ), ",
+                "        CALCULATE( SELECTEDMEASURE(), SAMEPERIODLASTYEAR('Date'[DateKey])) ",
+                ")",
+                ""
+              ]
+            },
+            {
+              "name": "Current",
+              "expression": "SELECTEDMEASURE()"
+            }
+          ]
+        },
+        "columns": [
+          {
+            "name": "Time Intelligence",
+            "dataType": "string",
+            "sourceColumn": "Name"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "CalculationGroup 1",
+            "mode": "import",
+            "source": {
+              "type": "calculationGroup"
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "a90d1b5d-b7ba-40b2-9ef9-63458fb005ed",
+        "fromTable": "SalesPerson",
+        "fromColumn": "SalesTerritoryKey",
+        "toTable": "SalesTerritory",
+        "toColumn": "SalesTerritoryKey"
+      },
+      {
+        "name": "409c3f6f-973c-40bc-9fff-831788cc72f8",
+        "fromTable": "Product",
+        "fromColumn": "ProductSubcategoryKey",
+        "toTable": "ProductSubCategory",
+        "toColumn": "ProductSubcategoryKey"
+      },
+      {
+        "name": "23381634-7de3-4527-a7ac-32a2bb862f0e",
+        "fromTable": "ProductSubCategory",
+        "fromColumn": "ProductCategoryKey",
+        "toTable": "ProductCategory",
+        "toColumn": "ProductCategoryKey"
+      },
+      {
+        "name": "f1c115d9-885d-464b-bf0b-4a0450c9387d",
+        "fromTable": "ResellerSales",
+        "fromColumn": "ProductKey",
+        "toTable": "Product",
+        "toColumn": "ProductKey"
+      },
+      {
+        "name": "55c037a3-6888-4b78-ae49-547d2fac2da7",
+        "fromTable": "SalesQuota",
+        "fromColumn": "EmployeeKey",
+        "toTable": "SalesPerson",
+        "toColumn": "EmployeeKey",
+        "crossFilteringBehavior": "bothDirections"
+      },
+      {
+        "name": "2dcd992f-0c4d-443a-a0a8-8d289353f04b",
+        "fromTable": "ResellerSales",
+        "fromColumn": "EmployeeKey",
+        "toTable": "SalesPerson",
+        "toColumn": "EmployeeKey",
+        "crossFilteringBehavior": "bothDirections"
+      },
+      {
+        "name": "a85d597a-9f5f-411a-b720-416ac70cc56c",
+        "fromTable": "ResellerSales",
+        "fromColumn": "ResellerKey",
+        "toTable": "Reseller",
+        "toColumn": "ResellerKey",
+        "crossFilteringBehavior": "bothDirections"
+      },
+      {
+        "name": "992192a8-cc65-4187-85e3-cd2bff1a43c1",
+        "fromTable": "Reseller",
+        "fromColumn": "GeographyKey",
+        "toTable": "Geography",
+        "toColumn": "GeographyKey",
+        "crossFilteringBehavior": "bothDirections"
+      },
+      {
+        "name": "81b919fc-2722-4f1a-a6c2-65d3f150ece5",
+        "fromTable": "SalesQuota",
+        "fromColumn": "DateKey",
+        "toTable": "Date",
+        "toColumn": "DateKey",
+        "isActive": false
+      },
+      {
+        "name": "789d58b2-cfaa-4e26-83e0-1f0b7df1bfe9",
+        "fromTable": "ResellerSales",
+        "fromColumn": "OrderDateKey",
+        "toTable": "Date",
+        "toColumn": "DateKey"
+      },
+      {
+        "name": "8f3b2217-ffc9-4b5c-a9d0-d95713d2588a",
+        "fromTable": "ResellerSales",
+        "fromColumn": "ShipDateKey",
+        "toTable": "Date",
+        "toColumn": "DateKey",
+        "isActive": false
+      }
+    ],
+    "perspectives": [
+      {
+        "name": "Sales",
+        "tables": [
+          {
+            "name": "Date",
+            "columns": [
+              {
+                "name": "CalendarMonth"
+              },
+              {
+                "name": "CalendarQuarter"
+              },
+              {
+                "name": "CalendarYear"
+              },
+              {
+                "name": "DateKey"
+              },
+              {
+                "name": "DayOfWeekShort"
+              },
+              {
+                "name": "MonthNameShort"
+              }
+            ],
+            "hierarchies": [
+              {
+                "name": "Calendar"
+              }
+            ]
+          },
+          {
+            "name": "Product",
+            "columns": [
+              {
+                "name": "Category"
+              },
+              {
+                "name": "Color"
+              },
+              {
+                "name": "Product"
+              },
+              {
+                "name": "ProductKey"
+              },
+              {
+                "name": "ProductSubcategoryKey"
+              },
+              {
+                "name": "Subcategory"
+              }
+            ],
+            "hierarchies": [
+              {
+                "name": "Products"
+              }
+            ]
+          },
+          {
+            "name": "ResellerSales",
+            "columns": [
+              {
+                "name": "EmployeeKey"
+              },
+              {
+                "name": "OrderDateKey"
+              },
+              {
+                "name": "OrderQuantity"
+              },
+              {
+                "name": "ProductKey"
+              },
+              {
+                "name": "ResellerKey"
+              },
+              {
+                "name": "SalesAmount"
+              },
+              {
+                "name": "SalesTerritoryKey"
+              },
+              {
+                "name": "ShipDateKey"
+              },
+              {
+                "name": "TotalProductCost"
+              }
+            ],
+            "measures": [
+              {
+                "name": "Cost"
+              },
+              {
+                "name": "DistinctProduct"
+              },
+              {
+                "name": "Order"
+              },
+              {
+                "name": "Profit"
+              },
+              {
+                "name": "Profit as %"
+              },
+              {
+                "name": "Sales YTD (Ordered)"
+              },
+              {
+                "name": "Sales YTD (Shipped)"
+              },
+              {
+                "name": "Sales"
+              }
+            ]
+          },
+          {
+            "name": "SalesPerson",
+            "columns": [
+              {
+                "name": "EmployeeKey"
+              },
+              {
+                "name": "FirstName"
+              },
+              {
+                "name": "LastName"
+              },
+              {
+                "name": "LoginID"
+              },
+              {
+                "name": "SalesPerson"
+              },
+              {
+                "name": "SalesTerritoryKey"
+              }
+            ]
+          },
+          {
+            "name": "SalesQuota",
+            "columns": [
+              {
+                "name": "DateKey"
+              },
+              {
+                "name": "EmployeeKey"
+              },
+              {
+                "name": "SalesAmountQuota"
+              }
+            ],
+            "measures": [
+              {
+                "name": "Variance"
+              },
+              {
+                "name": "Variance %"
+              }
+            ]
+          },
+          {
+            "name": "SalesTerritory",
+            "columns": [
+              {
+                "name": "Country"
+              },
+              {
+                "name": "Group"
+              },
+              {
+                "name": "Region"
+              },
+              {
+                "name": "SalesTerritoryKey"
+              }
+            ],
+            "hierarchies": [
+              {
+                "name": "Regions"
+              }
+            ]
+          },
+          {
+            "name": "Time Intelligence",
+            "columns": [
+              {
+                "name": "Time Intelligence"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Monitoring",
+        "tables": [
+          {
+            "name": "Date",
+            "columns": [
+              {
+                "name": "CalendarMonth"
+              },
+              {
+                "name": "CalendarQuarter"
+              },
+              {
+                "name": "CalendarYear"
+              },
+              {
+                "name": "DateKey"
+              },
+              {
+                "name": "DayOfWeekShort"
+              },
+              {
+                "name": "MonthNameShort"
+              }
+            ],
+            "hierarchies": [
+              {
+                "name": "Calendar"
+              }
+            ]
+          },
+          {
+            "name": "SalesPerson",
+            "columns": [
+              {
+                "name": "EmployeeKey"
+              },
+              {
+                "name": "FirstName"
+              },
+              {
+                "name": "LastName"
+              },
+              {
+                "name": "LoginID"
+              },
+              {
+                "name": "SalesPerson"
+              },
+              {
+                "name": "SalesTerritoryKey"
+              }
+            ]
+          },
+          {
+            "name": "SalesQuota",
+            "columns": [
+              {
+                "name": "DateKey"
+              },
+              {
+                "name": "EmployeeKey"
+              },
+              {
+                "name": "SalesAmountQuota"
+              }
+            ],
+            "measures": [
+              {
+                "name": "Variance"
+              },
+              {
+                "name": "Variance %"
+              }
+            ]
+          },
+          {
+            "name": "SalesTerritory",
+            "columns": [
+              {
+                "name": "Country"
+              },
+              {
+                "name": "Group"
+              },
+              {
+                "name": "Region"
+              },
+              {
+                "name": "SalesTerritoryKey"
+              }
+            ],
+            "hierarchies": [
+              {
+                "name": "Regions"
+              }
+            ]
+          },
+          {
+            "name": "Time Intelligence",
+            "columns": [
+              {
+                "name": "Time Intelligence"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "roles": [
+      {
+        "name": "SalesPeople",
+        "modelPermission": "read",
+        "tablePermissions": [
+          {
+            "name": "ProductCategory",
+            "filterExpression": "ProductCategory[EnglishProductCategoryName] = \"Bikes\""
+          }
+        ]
+      },
+      {
+        "name": "Admin",
+        "modelPermission": "read",
+        "members": [
+          {
+            "memberName": "i33067@isegulisboacloud.onmicrosoft.com",
+            "memberId": "i33067@isegulisboacloud.onmicrosoft.com",
+            "identityProvider": "AzureAD"
+          },
+          {
+            "memberName": "i33213@isegulisboacloud.onmicrosoft.com",
+            "memberId": "i33213@isegulisboacloud.onmicrosoft.com",
+            "identityProvider": "AzureAD"
+          },
+          {
+            "memberName": "i33114@isegulisboacloud.onmicrosoft.com",
+            "memberId": "i33114@isegulisboacloud.onmicrosoft.com",
+            "identityProvider": "AzureAD"
+          },
+          {
+            "memberName": "alexandre.baptista@isegulisboacloud.onmicrosoft.com",
+            "memberId": "alexandre.baptista@isegulisboacloud.onmicrosoft.com",
+            "identityProvider": "AzureAD"
+          }
+        ]
+      }
+    ],
+    "annotations": [
+      {
+        "name": "ClientCompatibilityLevel",
+        "value": "800"
+      }
+    ]
+  },
+  "id": "SemanticModel"
+}
